@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Key Inspector Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Courier Prime', monospace; }
+        .solid-box { border: 2px solid #000000; box-shadow: 4px 4px 0px 0px #000000; }
+        .solid-btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0px 0px #000000; }
+    </style>
+</head>
+<body class="bg-[#f0f0f0] text-black min-h-screen flex items-center justify-center p-6">
+
+    <div class="w-full max-w-xl bg-white solid-box rounded-none p-8">
+        
+        <!-- Header -->
+        <div class="border-b-2 border-black pb-6 mb-6">
+            <h1 class="text-2xl font-extrabold tracking-tight uppercase">API Credential Audit Pro</h1>
+            <p class="text-xs text-zinc-600 font-medium mt-1">Advanced structural diagnostics & network capacity analysis.</p>
+        </div>
+
+        <!-- Form Layout -->
+        <form id="apiForm" class="space-y-5">
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider mb-1.5">Provider Network</label>
+                <select id="provider" class="w-full bg-white border-2 border-black rounded-none px-3.5 py-2.5 text-sm font-semibold text-black focus:outline-none">
+                    <option value="openai">OpenAI Gateway</option>
+                    <option value="anthropic">Anthropic Claude</option>
+                    <option value="gemini">Google Gemini Core</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider mb-1.5">Secret Key Token</label>
+                <div class="flex border-2 border-black">
+                    <input type="password" id="apiKey" required placeholder="Enter exact API string..." 
+                        class="w-full bg-white rounded-none px-3.5 py-2.5 text-sm text-black placeholder-zinc-400 focus:outline-none">
+                    <button type="button" id="toggleMaskBtn" class="bg-black text-white text-[10px] font-bold uppercase tracking-widest px-4 border-l-2 border-black hover:bg-zinc-800 transition-all">
+                        Show
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit" id="submitBtn" 
+                class="w-full bg-black hover:bg-zinc-800 text-white font-bold text-xs uppercase tracking-widest py-3.5 px-4 rounded-none solid-btn transition-all duration-75">
+                Run Key Handshake
+            </button>
+        </form>
+
+        <!-- Plain Diagnostic Panels -->
+        <div id="resultContainer" class="hidden mt-8 pt-6 border-t-2 border-black space-y-5">
+            
+            <!-- Metadata Row -->
+            <div class="grid grid-cols-2 gap-4">
+                <div id="statusCard" class="border-2 border-black p-4 bg-white">
+                    <span class="text-[10px] font-bold uppercase tracking-wider block text-zinc-500">Status Response</span>
+                    <span id="statusBadge" class="text-sm font-bold mt-1.5 inline-block uppercase">Pending</span>
+                </div>
+                <div class="border-2 border-black p-4 bg-white">
+                    <span class="text-[10px] font-bold uppercase tracking-wider block text-zinc-500">Available Profiles</span>
+                    <span id="modelName" class="text-sm font-bold text-black mt-1.5 block truncate">-</span>
+                </div>
+            </div>
+
+            <!-- Rate Limits & Telemetry Row -->
+            <div class="grid grid-cols-3 gap-4">
+                <div class="border-2 border-black p-3 bg-white">
+                    <span class="text-[9px] font-bold uppercase tracking-wider block text-zinc-500">Requests Left (Min)</span>
+                    <span id="reqRemaining" class="text-xs font-black text-black mt-1 block">N/A</span>
+                </div>
+                <div class="border-2 border-black p-3 bg-white">
+                    <span class="text-[9px] font-bold uppercase tracking-wider block text-zinc-500">Tokens Left (Min)</span>
+                    <span id="tokRemaining" class="text-xs font-black text-black mt-1 block">N/A</span>
+                </div>
+                <div class="border-2 border-black p-3 bg-white">
+                    <span class="text-[9px] font-bold uppercase tracking-wider block text-zinc-500">Gateway Latency</span>
+                    <span id="latencyMetric" class="text-xs font-black text-black mt-1 block">0ms</span>
+                </div>
+            </div>
+
+            <!-- Estimated Tier Card -->
+            <div class="border-2 border-black p-4 bg-white flex justify-between items-center">
+                <div>
+                    <span class="text-[10px] font-bold uppercase tracking-wider block text-zinc-500">Account Tier Prediction</span>
+                    <span id="tierLabel" class="text-xs font-bold text-black uppercase mt-0.5 block">Analysis Pending</span>
+                </div>
+                <span id="tierIndicator" class="w-3 h-3 border border-black bg-zinc-300"></span>
+            </div>
+
+            <!-- Meaningful Plain Error Box -->
+            <div id="interpretationBlock" class="border-2 border-black p-4 bg-white">
+                <span class="text-[10px] font-bold uppercase tracking-wider block text-zinc-500 mb-1">Human Analysis</span>
+                <p id="errorMeaning" class="text-xs font-medium text-black leading-relaxed">Awaiting input stream.</p>
+            </div>
+
+            <!-- Technical Raw Print -->
+            <div>
+                <span class="text-[10px] font-bold uppercase tracking-wider block mb-1 text-zinc-500">Raw JSON Manifest</span>
+                <div class="bg-white border-2 border-black p-4 text-xs overflow-x-auto max-h-40">
+                    <pre id="rawResponse" class="text-black font-bold whitespace-pre-wrap">Empty system log.</pre>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Security Mask Toggle
+        const apiKeyInput = document.getElementById('apiKey');
+        const toggleMaskBtn = document.getElementById('toggleMaskBtn');
+        toggleMaskBtn.addEventListener('click', () => {
+            if (apiKeyInput.type === 'password') {
+                apiKeyInput.type = 'text';
+                toggleMaskBtn.textContent = 'Hide';
+            } else {
+                apiKeyInput.type = 'password';
+                toggleMaskBtn.textContent = 'Show';
+            }
+        });
+
+        document.getElementById('apiForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const provider = document.getElementById('provider').value;
+            const apiKey = apiKeyInput.value.trim();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const resultContainer = document.getElementById('resultContainer');
+            const statusCard = document.getElementById('statusCard');
+            const statusBadge = document.getElementById('statusBadge');
+            const modelName = document.getElementById('modelName');
+            const errorMeaning = document.getElementById('errorMeaning');
+            const rawResponse = document.getElementById('rawResponse');
+            
+            // New UI fields
+            const reqRemaining = document.getElementById('reqRemaining');
+            const tokRemaining = document.getElementById('tokRemaining');
+            const latencyMetric = document.getElementById('latencyMetric');
+            const tierLabel = document.getElementById('tierLabel');
+            const tierIndicator = document.getElementById('tierIndicator');
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'EXECUTING API LOOKUP...';
+            resultContainer.classList.remove('hidden');
+            
+            statusCard.style.backgroundColor = '#ffffff';
+            statusBadge.textContent = 'PROCESSING...';
+            modelName.textContent = '-';
+            errorMeaning.textContent = 'Parsing metadata frames...';
+            rawResponse.textContent = 'Connecting directly to host endpoint...';
+            
+            reqRemaining.textContent = 'Fetch...';
+            tokRemaining.textContent = 'Fetch...';
+            latencyMetric.textContent = '...';
+            tierLabel.textContent = 'Evaluating...';
+            tierIndicator.style.backgroundColor = '#d4d4d8';
+
+            let url = '';
+            let headers = {};
+
+            if (provider === 'openai') {
+                url = 'https://api.openai.com/v1/models';
+                headers = { 'Authorization': `Bearer ${apiKey}` };
+            } else if (provider === 'anthropic') {
+                url = 'https://api.anthropic.com/v1/models';
+                headers = { 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' };
+            } else if (provider === 'gemini') {
+                url = `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`;
+                headers = { 'Content-Type': 'application/json' };
+            }
+
+            // Benchmark Performance Start Timer
+            const startTime = performance.now();
+
+            try {
+                const response = await fetch(url, { method: 'GET', headers: headers });
+                
+                // Benchmark Performance End Timer
+                const endTime = performance.now();
+                const latency = Math.round(endTime - startTime);
+                latencyMetric.textContent = `${latency}ms`;
+
+                const data = await response.json();
+                rawResponse.textContent = JSON.stringify(data, null, 2);
+
+                // Read Remaining Request and Token headers dynamically if available
+                let reqHeader = response.headers.get('x-ratelimit-remaining-requests') || response.headers.get('anthropic-ratelimit-requests-remaining');
+                let tokHeader = response.headers.get('x-ratelimit-remaining-tokens') || response.headers.get('anthropic-ratelimit-tokens-remaining');
+                
+                reqRemaining.textContent = reqHeader ? parseInt(reqHeader).toLocaleString() : 'Hidden/Unlimited';
+                tokRemaining.textContent = tokHeader ? parseInt(tokHeader).toLocaleString() : 'Hidden/Unlimited';
+
+                if (response.ok) {
+                    statusCard.style.backgroundColor = '#ffffff';
+                    statusBadge.textContent = 'ACTIVE / OPERATIONAL';
+                    errorMeaning.textContent = 'Verification complete. The structural API token is perfectly valid and ready for backend orchestration routines.';
+
+                    let modelCount = 0;
+                    if (provider === 'gemini' && data.models) {
+                        modelCount = data.models.length;
+                        const firstModel = data.models[0]?.name.replace('models/', '') || 'Unknown';
+                        modelName.textContent = `${firstModel} (+${modelCount - 1} models)`;
+                    } else if (provider === 'openai' && data.data) {
+                        modelCount = data.data.length;
+                        modelName.textContent = `${data.data[0]?.id} (+${modelCount - 1} models)`;
+                    } else if (provider === 'anthropic' && data.data) {
+                        modelCount = data.data.length;
+                        modelName.textContent = `${data.data[0]?.id} (+${modelCount - 1} models)`;
+                    } else {
+                        modelName.textContent = 'AUTHORIZED KEY';
+                    }
+
+                    // Simple rules-based structural prediction of usage tier limits
+                    if (provider === 'gemini') {
+                        tierLabel.textContent = 'Standard Developer Access';
+                        tierIndicator.style.backgroundColor = '#000000';
+                    } else if (modelCount > 40 || (reqHeader && parseInt(reqHeader) > 3000)) {
+                        tierLabel.textContent = 'Tier 3+ (High Volume Production)';
+                        tierIndicator.style.backgroundColor = '#000000';
+                    } else {
+                        tierLabel.textContent = 'Tier 1 / Tier 2 (Basic Usage)';
+                        tierIndicator.style.backgroundColor = '#71717a';
+                    }
+
+                } else {
+                    modelName.textContent = 'NONE';
+                    reqRemaining.textContent = '0';
+                    tokRemaining.textContent = '0';
+                    tierLabel.textContent = 'Evaluation Failed';
+                    tierIndicator.style.backgroundColor = '#ef4444';
+                    
+                    if (response.status === 401) {
+                        statusBadge.textContent = 'UNAUTHORIZED (401)';
+                        errorMeaning.textContent = 'BAD KEY ERROR: The provider completely rejected this token. It does not exist, has expired, or contains an accidental copy-paste space character.';
+                    } else if (response.status === 403) {
+                        statusBadge.textContent = 'FORBIDDEN (403)';
+                        errorMeaning.textContent = 'ACCESS LOCKED: Token is authenticated but lacks access rights. Your project requires strict organization approvals or specific tier privileges.';
+                    } else if (response.status === 404) {
+                        statusBadge.textContent = 'NOT FOUND (404)';
+                        errorMeaning.textContent = 'DIRECTORY ERROR: The system lookup folder path is incorrect. The company has changed its baseline listing URL configuration.';
+                    } else if (response.status === 429) {
+                        statusBadge.textContent = 'QUOTA BREACHED (429)';
+                        errorMeaning.textContent = 'LIMIT EXCEEDED: The key works, but is completely frozen. You have zero remaining prepaid dollar balances, or you hit your concurrency speed ceiling.';
+                    } else {
+                        statusBadge.textContent = `SERVER FAULT (${response.status})`;
+                        errorMeaning.textContent = 'The model host returned an unrecognized state. Review the system JSON object code printed below.';
+                    }
+                }
+            } catch (error) {
+                statusBadge.textContent = 'BROWSER CORS BLOCK';
+                modelName.textContent = 'BLOCKED';
+                reqRemaining.textContent = '0';
+                tokRemaining.textContent = '0';
+                latencyMetric.textContent = 'Error';
+                tierLabel.textContent = 'Blocked Profile';
+                tierIndicator.style.backgroundColor = '#ef4444';
+                rawResponse.textContent = `Error log output: ${error.message}`;
+                errorMeaning.textContent = 'SECURITY POLICY BLOCK (CORS): Browser security mechanisms prevent raw web pages from pinging token platforms directly. Run via a dedicated proxy bridge server to inspect this key without client blockades.';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Run Key Handshake';
+            }
+        });
+    </script>
+</body>
+</html>
